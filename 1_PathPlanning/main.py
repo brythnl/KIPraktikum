@@ -27,36 +27,39 @@ def cost(graph,path):
 #
 def BF_Search(graph, start, goal):
     queue = Queue()
-    queue.put(graph.nodes[next((i for i,v in enumerate(graph.nodes) if v.name == start), -1)])
+    queue.put((0,graph.nodes[next((i for i,v in enumerate(graph.nodes) if v.name == start), -1)],0))
     explored = []
     path=[]
+    cost = 0
 
     if start == goal:
         print("Start and goal is the same")
-        return path
+        return [path,cost]
 
     while not queue.empty():
-        node = queue.get()
-        neighbours = node.edges  
+        q = queue.get()
+        node = q[1]
+        node.parent=q[2]
+        if node.parent : 
+            node.value = node.parent.value + q[0]
 
-        for neighbour in neighbours :
+        for neighbour in node.edges :
             if neighbour.end.name not in explored:
-                queue.put(neighbour.end)
-                neighbour.end.parent=node
+                queue.put((neighbour.value,neighbour.end,node))
                 if neighbour.end.name == goal:
                         new_path = list(path)
                         new_path.append(neighbour.end.name)
                         parent = node
+                        cost = node.value+neighbour.value
                         while parent !=0:
                              new_path.append(parent.name)
                              parent=parent.parent
                         new_path.reverse()
-                        return new_path
+                        return [new_path,cost]
         explored.append(node.name)
     
-    print("explored: ",explored)
     print("connecting path doesn't exist")
-    return path
+    return [path,cost]
 
 #
 #Depth First Search algorith
@@ -64,36 +67,39 @@ def BF_Search(graph, start, goal):
 #
 def DF_Search(graph, start, goal):
     queue = LifoQueue()
-    queue.put(graph.nodes[next((i for i,v in enumerate(graph.nodes) if v.name == start), -1)])
+    queue.put((0,graph.nodes[next((i for i,v in enumerate(graph.nodes) if v.name == start), -1)],0))
     explored = []
     path=[]
+    cost = 0
 
     if start == goal:
         print("Start and goal is the same")
-        return path
+        return [path,cost]
 
     while not queue.empty():
-        node = queue.get()
-        neighbours = node.edges  
+        q = queue.get()
+        node = q[1]
+        node.parent=q[2]
+        if node.parent : 
+            node.value = node.parent.value + q[0]
 
-        for neighbour in neighbours :
+        for neighbour in node.edges :
             if neighbour.end.name not in explored:
-                queue.put(neighbour.end)
-                neighbour.end.parent=node
+                queue.put((neighbour.value,neighbour.end,node))
                 if neighbour.end.name == goal:
                         new_path = list(path)
                         new_path.append(neighbour.end.name)
                         parent = node
+                        cost = node.value+neighbour.value
                         while parent !=0:
                              new_path.append(parent.name)
                              parent=parent.parent
                         new_path.reverse()
-                        return new_path
+                        return [new_path,cost]
         explored.append(node.name)
 
-    print("explored: ",explored)
     print("connecting path doesn't exist")
-    return path
+    return [path,cost]
 
 #
 #Depth First Search algorith
@@ -104,19 +110,20 @@ def UC_Search(graph, start, goal):
     queue.put((0,graph.nodes[next((i for i,v in enumerate(graph.nodes) if v.name == start), -1)],0))
     explored = []
     path=[]
-    val = 9999999999
+    cost = 0
 
     if start == goal:
         print("Start and goal is the same")
-        return path
+        return [path,cost]
 
     while not queue.empty():
         q = queue.get()
         node = q[1]
         node.parent=q[2]
-        neighbours = node.edges  
+        if node.parent : 
+            node.value = node.parent.value + q[0]
 
-        for neighbour in neighbours :
+        for neighbour in node.edges :
             if neighbour.end.name not in explored:
                 queue.put((neighbour.value,neighbour.end,node))
                 if neighbour.end.name == goal:
@@ -126,16 +133,19 @@ def UC_Search(graph, start, goal):
                         while parent !=0:
                              new_path.append(parent.name)
                              parent=parent.parent
-                        if cost(graph,new_path)<val:
+                        if cost == 0 :
+                            cost = node.value+neighbour.value
+                            path = new_path
+                        elif (node.value+neighbour.value) <cost:
+                            cost = node.value+neighbour.value
                             path = new_path
         if node.name != goal:      
             explored.append(node.name)
     if path[0]==goal:
         path.reverse()
-        return path
-    print("explored: ",explored)
+        return [path,cost]
     print("connecting path doesn't exist")
-    return path
+    return [path,cost]
 
 
 
@@ -161,11 +171,11 @@ romania = Graph( ['Or', 'Ne', 'Ze', 'Ia', 'Ar', 'Si', 'Fa',
 
 #romania.print()
 BFpath=BF_Search(romania, 'Bu' , 'Ti')
-print(BFpath)
-print("cost: ",cost(romania,BFpath))
+print("path: ", BFpath[0])
+print("cost: ",BFpath[1])
 DFpath=DF_Search(romania, 'Bu' , 'Ti')
-print(DFpath)
-print("cost: ",cost(romania,DFpath))
+print("path: ", DFpath[0])
+print("cost: ",DFpath[1])
 UCpath=UC_Search(romania, 'Bu' , 'Ti')
-print(UCpath)
-print("cost: ",cost(romania,UCpath))
+print("path: ", UCpath[0])
+print("cost: ",UCpath[1])
