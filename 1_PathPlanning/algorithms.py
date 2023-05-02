@@ -1,20 +1,6 @@
 from utils import *
 from queue import *
 
-# return the cost of the chosen path
-def cost(graph, path):
-    node = graph.nodes[next((i for i,v in enumerate(graph.nodes) if v.name == path[0]), -1)]
-    cost = 0
-    for city in path:
-        if node.name == city:
-          continue
-        for edge in node.edges:
-            if edge.end.name == city:
-                cost += edge.value
-                node = edge.end
-    return cost
-
-
 # Breadth First Search
 # return a list of the path, that should be taken based of the algorithm
 def BF_Search(graph, start, goal):
